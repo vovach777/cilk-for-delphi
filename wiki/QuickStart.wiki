@@ -3,7 +3,7 @@
 = Introduction =
 
 Cilk is a general-purpose programming language designed for multithreaded parallel computing.
-To implements cilk instruction, we use Delphi's interface called ICilk.
+To implements cilk instruction, we use Delphi interface called ICilk.
 They are very simple:
 
 {{{
