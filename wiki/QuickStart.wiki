@@ -16,13 +16,13 @@ begin
  .spawn(
    procedure
    begin
-     //do some work here...
+     //do some parallel work here...
      i := 42; //result of work
    end)
  .spawn(
    procedure
    begin
-     //do some work here...
+     //do some parallel work here...
      j := 42; //result of work
    end)
  .sync; //wait for i and j calculation well done
@@ -43,7 +43,7 @@ begin
      //do some work here...
      j := 42; //result of work
    end);
- //Do enather work here...
+ //Do enother work here...
  Cilk.sync; //and sync result 
 end;
 }}}
