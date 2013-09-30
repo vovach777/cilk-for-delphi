@@ -30,14 +30,14 @@ begin
  assert(j = 42); 
 // or you can use variable Cilk : ICilk
  Cilk := newCilk;
- .spawn(
+ Cilk.spawn(
    procedure
    begin
      //do some work here...
      i := 42; //result of work
    end);
   //Do Some work...
- .spawn(
+ Cilk.spawn(
    procedure
    begin
      //do some work here...
