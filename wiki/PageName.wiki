@@ -6,6 +6,7 @@ Cilk is a general-purpose programming language designed for multithreaded parall
 To implements cilk instruction, we use Delphi's interface called ICilk.
 They are very simple:
 
+{{{
 *var*
   i, j : *integer*;
 
@@ -25,6 +26,6 @@ They are very simple:
  .*sync*; //wait for i and j calculation well done
  assert(i = 42);
  assert(j = 42); 
-
+}}}
 
 = Details =
