@@ -29,6 +29,7 @@ type
        function spawn(const  p : TProc) : ICilk;
        function args : Targs;
        function sync : ICilk;
+       procedure _sync; inline;
        destructor Destroy; override;
   private
     end;
@@ -63,7 +64,7 @@ type
 
 destructor TCilk.Destroy;
 begin
-  sync;
+  _sync;
   inherited;
 end;
 
@@ -113,15 +114,20 @@ end;
 function TCilk.sync : ICilk;
 begin
   result := self;
+  _sync;
+end;
+
+
+procedure TCilk._sync;
+begin
   while FCount > 0 do
      TThread.SpinWait(FCount);
 end;
 
-
-    function newCilk : ICilk;
-    begin
-      Result := TCilk.Create;
-    end;
+function newCilk : ICilk;
+begin
+  Result := TCilk.Create;
+end;
 
 Initialization
   IsMultiThread := true;
