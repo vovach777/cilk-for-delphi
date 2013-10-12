@@ -26,10 +26,12 @@ type
     TCilk = class(TInterfacedObject, ICilk)
        FCount : integer;
        FErrorCount : integer;
+       FCountIsZero: THandle;
        function spawn(const  p : TProc) : ICilk;
        function args : Targs;
        function sync : ICilk;
        procedure _sync; inline;
+       constructor Create;
        destructor Destroy; override;
   private
     end;
@@ -41,6 +43,7 @@ type
   TTask = record
      Count : PInteger;
      ErrorCount : PInteger;
+     CountIsZero : PHandle;
      Proc  : TProc;
   end;
 
@@ -54,13 +57,19 @@ type
    except
      InterlockedIncrement( task.ErrorCount^ );
    end;
-   InterlockedDecrement(task.Count^);
+   if InterlockedDecrement(task.Count^) = 0 then
+     SetEvent(task.CountIsZero^);
    Dispose(task);
    result := 0;
  end;
 
 
 { TCilk }
+
+constructor TCilk.Create;
+begin
+  FCountIsZero := CreateEvent(nil,false,false,nil);
+end;
 
 destructor TCilk.Destroy;
 begin
@@ -77,6 +86,7 @@ begin
   InterlockedIncrement(FCount);
   task.Count := @FCount;
   task.ErrorCount := @FErrorCount;
+  task.CountIsZero := @FCountIsZero;
   task.Proc := p;
   if not QueueUserWorkItem(__ThreadStartRoutine,task,WT_EXECUTELONGFUNCTION) then
   begin
@@ -117,11 +127,12 @@ begin
   _sync;
 end;
 
-
 procedure TCilk._sync;
 begin
-  while FCount > 0 do
-     TThread.SpinWait(FCount);
+  if InterlockedCompareExchange(FCount,0,0) <> 0 then
+  begin
+     WaitForSingleObject(FCountIsZero,INFINITE);
+  end;
 end;
 
 function newCilk : ICilk;
