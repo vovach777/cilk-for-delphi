@@ -74,6 +74,7 @@ end;
 destructor TCilk.Destroy;
 begin
   _sync;
+  CloseHandle(FCountIsZero);
   inherited;
 end;
 
